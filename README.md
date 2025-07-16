@@ -29,9 +29,9 @@ It aims to replace paper-based record-keeping with a secure, efficient, and user
 
 ## 🛠️ Tech Stack
 
-| Frontend  | Backend | Database | Authentication | APIs |
-|-----------|---------|----------|-----------------|------|
-| HTML, CSS, JavaScript | Node.js, Express.js | PostgreSQL | JWT | REST APIs |
+| Frontend  | Backend | Database |
+|-----------|---------|----------|
+| HTML, CSS, JavaScript | Node.js
 
 ---
 
