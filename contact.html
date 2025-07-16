@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - HealthMatrix</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #DEF5FF, #ACDEF4, #288EC9);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #0A3D62;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-left {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-left li {
+      margin-right: 20px;
+    }
+
+    .nav-left li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      color: #0A3D62;
+      border-bottom: 2px solid #D35400;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .contact-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .contact-card {
+      background-color: #f1faff;
+      border-left: 5px solid #0A3D62;
+      padding: 1.5rem;
+      border-radius: 6px;
+    }
+
+    .contact-card p {
+      margin: 0.5rem 0;
+      color: #333;
+    }
+
+    .contact-card strong {
+      display: inline-block;
+      width: 110px;
+      color: #0A3D62;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #0A3D62;
+      color: white;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">HealthMatrix</div>
+      <nav>
+        <ul class="nav-left">
+          <li><a onclick="goTo('index.html')">Home</a></li>
+          <li><a onclick="goTo('about.html')">About Us</a></li>
+          
+          <li><a onclick="goTo('contact.html')">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>Contact Us</h2>
+    <div class="contact-info">
+      <div class="contact-card">
+        <p><strong>Hospital:</strong> City Health Care Center</p>
+        <p><strong>Address:</strong> 123 Wellness Avenue<br>Healthy City, HC 45678</p>
+      </div>
+      <div class="contact-card">
+        <p><strong>Phone:</strong> +1 (800) 123-4567</p>
+        <p><strong>Emergency:</strong> +1 (800) 987-6543</p>
+      </div>
+      <div class="contact-card">
+        <p><strong>Email:</strong> contact@cityhealthcare.com</p>
+        <p><strong>Website:</strong> www.cityhealthcare.com</p>
+      </div>
+      <div class="contact-card">
+        <p><strong>Office Hours:</strong><br>Mon - Sat: 8:00 AM - 8:00 PM<br>Sun: Closed</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Health Matrix. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    function goTo(url) {
+      window.location.href = url;
+    }
+  </script>
+</body>
+
+</html>

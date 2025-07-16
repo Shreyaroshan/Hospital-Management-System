@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Doctor Profile - HealthMatrix</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #DEF5FF, #ACDEF4, #288EC9);
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+
+    header {
+      background: linear-gradient(to right, #1B4F72, #154360, #0E2F44);
+      color: white;
+      padding: 15px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropbtn {
+      background-color: transparent;
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #0A3D62;
+      min-width: 200px;
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      border-radius: 5px;
+    }
+
+    .dropdown-content a {
+      color: white;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #1B4F72;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      width: 80%;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+    }
+
+    h2 {
+      text-align: center;
+      color: black;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      color: black;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background-color: #0A3D62;
+      color: white;
+    }
+
+    .action-btn {
+      padding: 8px 12px;
+      margin: 2px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .details-btn {
+      background-color: #1A5276;
+      color: white;
+    }
+
+    .prescription-btn {
+      background-color: #148F77;
+      color: white;
+    }
+
+    footer {
+      background: linear-gradient(to right, #1B4F72, #154360, #0E2F44);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+      font-size: 14px;
+    }
+  </style>
+ 
+ <script>
+    window.onload = async function () {
+        const doctorID = localStorage.getItem("loggedInDoctorID");
+
+        if (!doctorID) {
+            alert("⚠️ No doctor ID found. Please login first.");
+            window.location.href = "doctor-login.html"; // Redirect if no ID
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:4000/api/doctor/${doctorID}`);
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                const doctor = result.doctor;
+
+                // Fill in the doctor details in the table
+                document.getElementById("profile-doctor-id").textContent = doctor.doctor_id;
+                document.getElementById("profile-name").textContent = doctor.name;
+                document.getElementById("profile-lname").textContent = doctor.lname;
+                document.getElementById("profile-specialization").textContent = doctor.specialization;
+                document.getElementById("profile-experience").textContent = doctor.experience;
+                document.getElementById("profile-fee").textContent = doctor.fee;
+                document.getElementById("profile-qualification").textContent = doctor.qualification;
+                document.getElementById("profile-email").textContent = doctor.email;
+                document.getElementById("profile-phone").textContent = doctor.phone;
+            } else {
+                alert("❌ Could not fetch doctor data.");
+            }
+        } catch (error) {
+            console.error("Error fetching doctor profile:", error);
+            alert("❌ Failed to load doctor profile.");
+        }
+    };
+
+    // Function to fetch and display appointments
+  // Function to fetch and display appointments
+async function loadAppointments(doctorID) {
+  try {
+    const response = await fetch(`http://localhost:4000/api/appointments2/${doctorID}`);
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      const appointments = result.appointments;
+      const tbody = document.querySelector("#appointmentsSection tbody");
+      tbody.innerHTML = ''; // Clear existing rows
+
+      appointments.forEach(appointment => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${appointment.appointment_id}</td>
+          <td>${appointment.patient_id}</td>
+          <td>${appointment.doctor_id}</td>
+          <td>${appointment.date}</td>
+          <td>${appointment.time}</td>
+          <td>
+            <button class="action-btn details-btn" onclick="viewDetails('${appointment.patient_id}')">View Details</button>
+
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    } else {
+      alert("No appointments.");
+    }
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+    alert("❌ Failed to load appointments.");
+  }
+}
+
+function viewDetails(patientId) {
+  // Navigate to add_prescription.html and pass the patientId in the URL
+  window.location.href = `addp.html?patient_id=${encodeURIComponent(patientId)}`;
+}
+
+
+
+
+    function viewPrescription(appointmentId) {
+        alert("Opening prescription for " + appointmentId);
+    }
+
+    function showSection(section) {
+        document.getElementById("profileSection").style.display = section === "profile" ? "block" : "none";
+        document.getElementById("appointmentsSection").style.display = section === "appointments" ? "block" : "none";
+
+        // When switching to appointments section, load appointments
+        if (section === "appointments") {
+            const doctorID = localStorage.getItem("loggedInDoctorID");
+            if (doctorID) {
+                loadAppointments(doctorID);
+            }
+        }
+    }
+
+    function toggleMenu() {
+        const menu = document.getElementById("dropdownMenu");
+        menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    }
+
+    window.onclick = function (e) {
+        if (!e.target.matches('.dropbtn')) {
+            const dropdowns = document.getElementsByClassName("dropdown-content");
+            for (let i = 0; i < dropdowns.length; i++) {
+                dropdowns[i].style.display = "none";
+            }
+        }
+    };
+
+    function logout() {
+        alert("You are logged out!");
+        window.location.href = "index.html"; // Adjust this as needed
+    }
+</script>
+
+
+
+</head>
+<body>
+  <header>
+    <div class="logo">HealthMatrix</div>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About us</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="dropdown">
+        <button class="dropbtn" onclick="toggleMenu()">Menu ▼</button>
+        <div id="dropdownMenu" class="dropdown-content">
+          <a href="#" onclick="showSection('profile')">Profile</a>
+          <a href="#" onclick="showSection('appointments')">Check Appointments</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container" id="profileSection">
+    <h2>Doctor Profile</h2>
+    
+    <table>
+        <tr><th>Doctor ID</th><td id="profile-doctor-id"></td></tr>
+        <tr><th>Name</th><td id="profile-name"></td></tr>
+        <tr><th>Surname</th><td id="profile-lname"></td></tr>
+        <tr><th>Specialization</th><td id="profile-specialization"></td></tr>
+        <tr><th>Experience (Years)</th><td id="profile-experience"></td></tr>
+        <tr><th>Fee</th><td id="profile-fee"></td></tr>
+        <tr><th>Qualification</th><td id="profile-qualification"></td></tr>
+        <tr><th>Email</th><td id="profile-email"></td></tr>
+        <tr><th>Phone Number</th><td id="profile-phone"></td></tr>
+    </table>
+  </div>
+
+  <div class="container" id="appointmentsSection" style="display: none;">
+    <h2>Appointment Details</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Appointment ID</th>
+          <th>Patient ID</th>
+          <th>Doctor ID</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Appointments will be inserted here dynamically -->
+      </tbody>
+    </table>
+    
+  </div>
+
+  <footer>
+    &copy; 2025 HealthMatrix. All rights reserved.
+  </footer>
+
+ 
+</body>
+</html>

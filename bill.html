@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - HealthMatrix</title>
+  <style>
+    .navbar {
+        background-color: linear-gradient(to right, #DEF5FF, #ACDEF4, #288EC9);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 50px;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #DEF5FF, #ACDEF4, #288EC9);
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+
+    header {
+      background: linear-gradient(to right, #1B4F72, #154360, #0E2F44);
+      color: white;
+      padding: 15px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li {
+      display: inline;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      width: 50%;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+    }
+
+    .container h2 {
+      text-align: center;
+      color: black;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      color: black;
+    }
+
+    td {
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    label {
+      font-weight: bold;
+      color: black;
+    }
+
+    input {
+      width: 95%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .submit-btn {
+      background: #D35400;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    footer {
+      background: linear-gradient(to right, #1B4F72, #154360, #0E2F44);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .appointment-table {
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: black;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .appointment-table th,
+    .appointment-table td {
+      padding: 12px;
+      text-align: left;
+    }
+
+    .appointment-table th {
+      background-color: #1B4F72;
+      color: white;
+    }
+
+    .appointment-table tr:not(:first-child):hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">HealthMatrix</div>
+    <nav>
+      <ul>
+        <li><a onclick="goToHome()">Home</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Generate Bill Section with Appointment Status -->
+  <div id="billSection" class="container">
+    <h2>Generate Patient Bill</h2>
+    <form id="billForm">
+
+      <table>
+        <tr>
+          <td><label>Patient ID:</label></td>
+          <td><input type="text" placeholder="Enter Patient ID" required></td>
+        </tr>
+        <tr>
+          <td><label>Admin ID:</label></td>
+          <td><input type="text" placeholder="Enter Admin ID" required></td>
+        </tr>
+        <tr>
+          <td><label>Date:</label></td>
+          <td><input type="date" required></td>
+        </tr>
+        <tr>
+          <td><label>Time:</label></td>
+          <td><input type="time" required></td>
+        </tr>
+        <tr>
+          <td><label>Amount (₹):</label></td>
+          <td><input type="number" placeholder="Enter Amount" required></td>
+        </tr>
+      </table>
+      <button type="submit" class="submit-btn">Generate Bill</button>
+    </form>
+
+    <!-- Appointment Details Display -->
+    <h2 style="margin-top: 40px; color: black;">Latest Appointment Details</h2>
+    <table class="appointment-table">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody id="appointmentTableBody">
+        <!-- JS will populate rows here -->
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    &copy; 2025 HealthMatrix. All rights reserved.
+  </footer>
+
+  <script>
+    function formatTime(timeStr) {
+  const [hour, minute] = timeStr.split(':');
+  let h = parseInt(hour);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12; // Convert 0 to 12
+  return `${h}:${minute} ${ampm}`;
+}
+
+    async function populateAppointments() {
+  try {
+    // Fetch the latest appointment from the API
+    const response = await fetch("http://localhost:4000/api/latest-appointment");
+    const appointment = await response.json();
+
+    const tableBody = document.getElementById('appointmentTableBody');
+    tableBody.innerHTML = ''; // Clear the previous content
+
+    // Check if the appointment exists
+    if (!appointment || Object.keys(appointment).length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="2">No appointments found.</td></tr>`;
+      return;
+    }
+
+    // Format the appointment details
+    const formatted = {
+      "Appointment ID": appointment.appointment_id,
+      "Patient ID": appointment.patient_id,
+      "Specialization": appointment.specialization,
+      "Doctor ID": appointment.doctor_id,
+      "Date": appointment.date,
+      "Time": formatTime(appointment.time),
+      "Consultation Fee (₹)": appointment.fee,  // Fee from doctor table
+    };
+
+    // Loop through and populate the table with appointment details
+    for (let key in formatted) {
+      tableBody.innerHTML += `
+        <tr>
+          <td><strong>${key}</strong></td>
+          <td>${formatted[key]}</td>
+        </tr>
+      `;
+    }
+
+    // Optionally, populate the bill form with the fee value
+    document.querySelector("#billForm input[placeholder='Enter Amount']").value = appointment.fee;
+    
+const formattedDate = new Date(appointment.date).toISOString().split('T')[0];
+document.querySelector("#billForm input[type='date']").value = formattedDate;
+    document.querySelector("#billForm input[type='time']").value = appointment.time;
+
+
+  } catch (error) {
+    console.error("Error fetching appointment:", error);
+    document.getElementById('appointmentTableBody').innerHTML =
+      `<tr><td colspan="2">No unbilled appointment</td></tr>`;
+  }
+}
+
+window.onload = function () {
+  populateAppointments();
+};
+
+
+    window.onload = function () {
+      populateAppointments();
+    }
+    function goTo(url) {
+            window.location.href = url;
+        }
+
+
+    function goBack() {
+        window.location.href = "admin_login.html";
+    }
+
+    function goToHome() {
+        window.location.href = "index.html";
+    }
+    document.getElementById("billForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const inputs = document.querySelectorAll("#billForm input");
+  const data = {
+    patient_id: inputs[0].value,
+    admin_id: inputs[1].value,
+    date: inputs[2].value,
+    time: inputs[3].value,
+    amount: inputs[4].value
+  };
+
+  // Log the data being sent
+  console.log("Data being sent to server:", data);
+
+  try {
+    const response = await fetch("http://localhost:4000/api/add-bill", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+  alert("✅ Bill added successfully!");
+  document.getElementById("billForm").reset();
+  window.location.href = "index.html"; // Redirect to home page
+}
+else {
+      alert("❌ Failed to add bill: " + result.message);
+    }
+  } catch (err) {
+    alert("❌ Server error: " + err.message);
+  }
+});
+
+
+  </script>
+</body>
+</html>

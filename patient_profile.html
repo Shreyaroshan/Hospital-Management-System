@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Profile</title>
+    <style>
+         * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #DEF5FF, #ACDEF4, #288EC9);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #0A3D62;
+            color: white;
+            padding: 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-left li {
+            margin-right: 20px;
+        }
+
+        .nav-left li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropbtn {
+            background-color: #0A3D62;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #0A3D62;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #1B4F72;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #0A3D62;
+            border-bottom: 2px solid #D35400;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #0A3D62;
+            color: white;
+        }
+
+        .btn {
+            background: #D35400;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #A04000;
+        }
+
+        .back-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #0A3D62;
+            color: white;
+            margin-top: 40px;
+        }
+    </style>
+    <script>
+        window.onload = async function () {
+            const patientID = localStorage.getItem("loggedInPatientID");
+    
+            if (!patientID) {
+                alert("⚠️ No patient ID found. Please login first.");
+                window.location.href = "index.html"; // Redirect if no ID
+                return;
+            }
+    
+            //try {
+                const response = await fetch(`http://localhost:4000/api/patient2/${patientID}`);
+                const result = await response.json();
+    
+                //if (response.ok && result.patient) {
+                    const patient = result.patient;
+    
+                    // Fill in the table with dynamic data
+                    document.getElementById("profile-patient-id").textContent = patient.patient_id;
+                    document.getElementById("profile-name").textContent = patient.name;
+                    document.getElementById("profile-lname").textContent = patient.lname;
+                    document.getElementById("profile-city").textContent = patient.address;
+                    document.getElementById("profile-phone").textContent = patient.phone;
+                    document.getElementById("profile-blood").textContent = patient.blood_group;
+    
+                //} else {
+                //    alert("❌ Could not fetch patient data.");
+                //}
+            //} catch (error) {
+             //   console.error("Error fetching profile:", error);
+               // alert("❌ Failed to load patient profile.");
+            //}
+            await fetchMedicalRecords(patientID);
+            async function fetchMedicalRecords(patientID) {
+            try {
+                const res = await fetch(`http://localhost:4000/api/medical-records/${patientID}`);
+                const data = await res.json();
+
+                const tbody = document.getElementById("medical-record-body");
+                tbody.innerHTML = "";
+
+                if (res.ok && data.records.length > 0) {
+                    data.records.forEach(record => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${record.record_id}</td>
+                            <td>${record.patient_id}</td>
+                            <td>${record.diagnosis}</td>
+                            <td>${new Date(record.date).toLocaleDateString()}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4">No medical records found.</td></tr>`;
+                }
+            } catch (error) {
+                console.error("Error fetching medical records:", error);
+                document.getElementById("medical-record-body").innerHTML = `<tr><td colspan="4">Error loading records</td></tr>`;
+            }
+        }
+
+        function goBack() {
+            window.location.href = "index.html";
+        }
+        };
+        
+    </script>
+    
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="logo">HealthMatrix</div>
+            <nav>
+                <ul class="nav-left">
+                    <li><a onclick="goHome()">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#login">Login</a></li>
+                </ul>
+                <div class="dropdown">
+                    <button class="dropbtn" onclick="toggleMenu()">Menu ▼</button>
+                    <div id="dropdownMenu" class="dropdown-content">
+                        <a onclick="goTo('patient_profile.html')">Patient Profile</a>
+                        <a onclick="goTo('book.html')">Book Appointment</a>
+                        <a onclick="goTo('appoint.html')">Appointment Status</a>
+                        <a onclick="goTo('receipt.html')">Receipt of Payment</a>
+                        <a onclick="goTo('pres.html')">View Prescription</a>
+                        <a onclick="goTo('index.html')">Logout</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Patient Details Section -->
+        <div class="section">
+            <h2>Patient Details</h2>
+            <table>
+                <tr><th>Patient ID</th><td id="profile-patient-id"></td></tr>
+                <tr><th>Name</th><td id="profile-name"></td></tr>
+                <tr><th>Surname</th><td id="profile-lname"></td></tr>
+                <tr><th>City</th><td id="profile-city"></td></tr>
+                <tr><th>Phone Number</th><td id="profile-phone"></td></tr>
+                <tr><th>Blood Group</th><td id="profile-blood"></td></tr>
+            </table>
+            
+        </div>
+
+        <!-- Medical Record Section -->
+        <div class="section">
+            <h2>Medical Record</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>Patient ID</th>
+                        <th>Diagnosis</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="medical-record-body">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+                
+            </table>
+        </div>
+
+        <!-- Back Button -->
+        <div class="back-button">
+            <button class="btn" onclick="goBack()">Back to Menu</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Health Matrix. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("dropdownMenu");
+            menu.style.display = (menu.style.display === "block") ? "none" : "block";
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].style.display = "none";
+                }
+            }
+        }
+        function goBack() {
+            window.location.href = "patient_profile.html";
+        }
+
+        function goHome() {
+            window.location.href = "index.html";
+        }
+
+        function goTo(page) {
+            window.location.href = page;
+        }
+    </script>
+    
+    
+
+</body>
+</html>

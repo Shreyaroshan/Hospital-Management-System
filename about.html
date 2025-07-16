@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - HealthMatrix</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #DEF5FF, #ACDEF4, #288EC9);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #0A3D62;
+      color: white;
+      padding: 20px;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-left {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-left li {
+      margin-right: 20px;
+    }
+
+    .nav-left li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      color: #0A3D62;
+      border-bottom: 2px solid #D35400;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 32px;
+    }
+
+    .intro {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .content-section {
+      line-height: 1.8;
+      color: #444;
+      font-size: 17px;
+      padding: 0 15px;
+    }
+
+    .content-section h3 {
+      color: #0A3D62;
+      margin-top: 30px;
+      font-size: 22px;
+    }
+
+    .highlight-box {
+      background: #f1faff;
+      padding: 20px;
+      border-left: 5px solid #0A3D62;
+      margin: 20px 0;
+      border-radius: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #0A3D62;
+      color: white;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">HealthMatrix</div>
+      <nav>
+        <ul class="nav-left">
+          <li><a onclick="goTo('index.html')">Home</a></li>
+          <li><a onclick="goTo('about.html')">About Us</a></li>
+        
+          <li><a onclick="goTo('contact.html')">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>About HealthMatrix</h2>
+    <div class="intro">
+      Empowering hospitals with smart and integrated digital solutions.
+    </div>
+
+    <div class="content-section">
+      <p>
+        HealthMatrix is a comprehensive Hospital Management System built to streamline healthcare operations,
+        improve patient experience, and reduce administrative burden. Our system bridges the gap between medical
+        professionals and patients through a seamless, secure, and user-friendly platform.
+      </p>
+
+      <div class="highlight-box">
+        <h3>Why Choose HealthMatrix?</h3>
+        <ul>
+          <li>Efficient patient record and appointment management</li>
+          <li>Doctor and staff coordination made easy</li>
+          <li>Instant access to digital prescriptions and billing</li>
+          <li>Real-time notifications and updates for all users</li>
+        </ul>
+      </div>
+
+      <h3>Our Vision</h3>
+      <p>
+        To revolutionize healthcare management with digital tools that foster trust, transparency, and timely care.
+        At HealthMatrix, we aim to be the heartbeat of hospital systems, ensuring care flows where it's needed most.
+      </p>
+
+      <h3>Who We Serve</h3>
+      <p>
+        HealthMatrix is designed for hospitals, clinics, and healthcare professionals looking for a modern approach to
+        managing their daily operations. Patients also benefit by accessing their health information anytime, anywhere.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Health Matrix. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    function goTo(url) {
+      window.location.href = url;
+    }
+  </script>
+</body>
+
+</html>

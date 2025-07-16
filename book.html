@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Appointment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #DEF5FF, #ACDEF4, #288EC9);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #0A3D62;
+            color: white;
+            padding: 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-left li {
+            margin-right: 20px;
+        }
+
+        .nav-left li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropbtn {
+            background-color: #0A3D62;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #0A3D62;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #1B4F72;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #0A3D62;
+            border-bottom: 2px solid #D35400;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #0A3D62;
+            color: white;
+        }
+
+        .btn {
+            background: #D35400;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #A04000;
+        }
+
+        .back-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #0A3D62;
+            color: white;
+            margin-top: 40px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #288EC9;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #0A3D62;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #0A3D62;
+            border-bottom: 2px solid #D35400;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #0A3D62;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #0A3D62;
+            color: white;
+        }
+
+        .btn {
+            background: #D35400;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #A04000;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<script>
+    async function bookAppointment() {
+        const patient_id = localStorage.getItem("loggedInPatientID");
+        const doctor_id = document.getElementById("doctor-id").value;
+        const specialization = document.getElementById("specialization").value;
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
+        const appointmentData = {
+            patient_id,
+            doctor_id,
+            specialization,
+            date,
+            time
+        };
+
+        try {
+            const response = await fetch("http://localhost:4000/api/book-appointment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(appointmentData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert("✅ Appointment booked successfully!");
+                // Optionally clear the form
+                document.getElementById("appointment-form").reset();
+            } else {
+                alert("❌ " + result.message);
+            }
+        } catch (error) {
+            console.error("❌ Error:", error);
+            alert("Server error while booking appointment.");
+        }
+    }
+</script>
+<script>
+   async function fetchDoctors() {
+    try {
+        const response = await fetch("http://localhost:4000/api/doctors");
+        const result = await response.json();
+
+        if (result.success) {
+            const doctorsTable = document.querySelector("tbody");
+
+            // Clear the existing rows
+            doctorsTable.innerHTML = "";
+
+            // Loop through the doctors and add each as a row in the table
+            result.doctors.forEach(doctor => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${doctor.doctor_id}</td>
+                    <td>${doctor.name} ${doctor.lname}</td>
+                    <td>${doctor.specialization}</td>
+                    <td>Rs ${doctor.fee}</td>
+                `;
+
+                doctorsTable.appendChild(row);
+            });
+        } else {
+            alert("❌ " + result.message);
+        }
+    } catch (error) {
+        console.error("❌ Error fetching doctors:", error);
+        alert("There was an error fetching doctors.");
+    }
+}
+
+// Fetch doctors when the page loads
+window.onload = fetchDoctors;
+
+</script>
+
+
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">HealthMatrix</div>
+            <nav>
+                <ul class="nav-left">
+                    <li><a onclick="goToHome()">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#login">Login</a></li>
+                </ul>
+                <div class="dropdown">
+                    <button class="dropbtn" onclick="toggleMenu()">Menu ▼</button>
+                    <div id="dropdownMenu" class="dropdown-content">
+                        <a onclick="goTo('patient_profile.html')">Patient Profile</a>
+                        <a onclick="goTo('book.html')">Book Appointment</a>
+                        <a onclick="goTo('appoint.html')">Appointment Status</a>
+                        <a onclick="goTo('receipt.html')">Receipt of Payment</a>
+                        <a onclick="goTo('pres.html')">View Prescription</a>
+                        <a onclick="goTo('index.html')">Logout</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+    <h2>Book Appointment</h2>
+    <form id="appointment-form">
+        <label>Doctor ID: <input type="number" id="doctor-id" required></label><br><br>
+        <label>Specialization: 
+            <select id="specialization" required>
+                <option value="">Select Specialization</option>
+                <option value="Cardiology">Cardiology</option>
+                <option value="Dermatology">Dermatology</option>
+                <option value="Orthopedics">Orthopedics</option>
+                <option value="Neurology">Neurology</option>
+                <option value="Pediatrics">Pediatrics</option>
+                <option value="Gastroenterology">Gastroenterology</option>
+                <!-- Add more options as needed -->
+            </select>
+        </label><br><br>
+        
+        <label>Date: <input type="date" id="date" required></label><br><br>
+        <label>Time: <input type="time" id="time" required></label><br><br>
+        <button type="button" class="btn" onclick="bookAppointment()">Book Appointment</button>
+    </form>
+</div>
+
+
+        <!-- Doctor Chart Section -->
+        <h2>Available Doctors</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Doctor ID</th>
+                    <th>Doctor Name</th>
+                    <th>Department</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+            <tbody id="doctorTableBody">
+                <!-- Doctor rows will be inserted here via JavaScript -->
+            </tbody>
+            
+        </table>
+
+       
+
+    </div>
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("dropdownMenu");
+            menu.style.display = (menu.style.display === "block") ? "none" : "block";
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].style.display = "none";
+                }
+            }
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            alert("Prescription Submitted, Thank You!");
+            document.getElementById("newDiagnosis").value = "";
+            document.getElementById("medicine").value = "";
+        }
+
+        function goTo(url) {
+            window.location.href = url;
+        }
+
+
+    function goBack() {
+        window.location.href = "patient_profile.html";
+    }
+
+    function goToHome() {
+        window.location.href = "index.html";
+    }
+    </script>
+</body>
+</html>

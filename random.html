@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Prescription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #DEF5FF, #ACDEF4, #288EC9);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #0A3D62;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-left li {
+            margin-right: 20px;
+        }
+
+        .nav-left li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropbtn {
+            background-color: #0A3D62;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #0A3D62;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #1B4F72;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #0A3D62;
+            border-bottom: 2px solid #D35400;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            font-size: 16px;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #0A3D62;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #0A3D62;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #1B4F72;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #0A3D62;
+            color: white;
+            margin-top: 40px;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const params = new URLSearchParams(window.location.search);
+            const patientId = params.get("patient_id");
+        
+            if (!patientId) {
+                alert("❌ No patient ID in URL");
+                return;
+            }
+        
+            try {
+                // Fetch patient details
+                const patientRes = await fetch(`http://localhost:4000/api/patient/profile/${patientId}`);
+                const patientData = await patientRes.json();
+        
+                if (patientData.success) {
+                    const p = patientData.patient;
+                    document.getElementById("patient_id").textContent = p.patient_id;
+                    document.getElementById("name").textContent = `${p.name} ${p.lname}`;
+                    document.getElementById("dob").textContent = new Date(p.dob).toLocaleDateString();
+                    document.getElementById("phone").textContent = p.phone;
+                    document.getElementById("address").textContent = p.address;
+                    document.getElementById("blood_group").textContent = p.blood_group;
+                } else {
+                    alert("❌ Patient not found.");
+                }
+        
+                // Fetch latest medical record
+                const recordRes = await fetch(`http://localhost:4000/api/medical-records/${patientId}`);
+                const recordData = await recordRes.json();
+        
+                if (recordData.records && recordData.records.length > 0) {
+                    const latest = recordData.records[0]; // Assuming the latest is first (already ordered DESC)
+                    document.getElementById("diagnosis").textContent = latest.diagnosis;
+                    document.getElementById("record_date").textContent = new Date(latest.date).toLocaleDateString();
+                } else {
+                    document.getElementById("diagnosis").textContent = "No records found";
+                    document.getElementById("record_date").textContent = "-";
+                }
+        
+            } catch (error) {
+                console.error("❌ Error:", error);
+                alert("Something went wrong while fetching patient or medical data.");
+            }
+        });
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const patientId = new URLSearchParams(window.location.search).get("patient_id");
+            const newDiagnosis = document.getElementById("newDiagnosis").value;
+            const medicine = document.getElementById("medicine").value;
+
+            if (!newDiagnosis || !medicine) {
+                alert("❌ Please fill out both diagnosis and medicine fields.");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:4000/api/update-prescription', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        patient_id: patientId,
+                        medicine: medicine,
+                        diagnosis: newDiagnosis,
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert("✅ Prescription Issued Successfully!");
+                    document.getElementById("newDiagnosis").value = "";
+                    document.getElementById("medicine").value = "";
+                    setTimeout(() => {
+                window.location.href = "doctor.html";
+            }, 1500);
+                } else {
+                    alert("❌ Failed to issue prescription. " + (result.message || ""));
+                }
+
+            } catch (error) {
+                console.error("❌ Error:", error);
+                alert("❌ Something went wrong while updating the prescription.");
+            }
+        }
+
+
+
+
+        </script>
+        
+</head>
+<body>
+
+    <header>
+        <div class="logo">HealthMatrix</div>
+        <nav>
+            <ul class="nav-left">
+                <li><a onclick="goTo('index.html')">Home</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#Contact">Contact</a></li>
+            </ul>
+            <div class="dropdown">
+                <button class="dropbtn" onclick="toggleMenu()">Menu ▼</button>
+                <div id="dropdownMenu" class="dropdown-content">
+                    <a href="doctor.html" onclick="showSection('profile')">Profile</a>
+          <a href="doctor.html" onclick="showSection('appointments')">Check Appointments</a>
+          <a href="index.html" onclick="logout()">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Patient Details</h2>
+        <table>
+            <tbody>
+                <tr><td>ID:</td><td id="patient_id"></td></tr>
+                <tr><td>Name:</td><td id="name"></td></tr>
+                <tr><td>Date of Birth:</td><td id="dob"></td></tr>
+                <tr><td>Phone:</td><td id="phone"></td></tr>
+                <tr><td>Address:</td><td id="address"></td></tr>
+                <tr><td>Blood Group:</td><td id="blood_group"></td></tr>
+              </tbody>
+        </table>
+
+        <h2>Medical Record</h2>
+        <table>
+            <tbody>
+                <tr><td>Diagnosis:</td><td id="diagnosis"></td></tr>
+                <tr><td>Date:</td><td id="record_date"></td></tr>
+              </tbody>
+        </table>
+
+        <h2>Add Prescription</h2>
+        <form onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <label for="newDiagnosis">New Diagnosis</label>
+                <textarea id="newDiagnosis" rows="3" placeholder="Enter diagnosis here..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="medicine">Prescribed Medicine</label>
+                <textarea id="medicine" rows="3" placeholder="Enter medicine details..."></textarea>
+            </div>
+
+            <button type="submit">Submit Prescription</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Health Matrix. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("dropdownMenu");
+            menu.style.display = (menu.style.display === "block") ? "none" : "block";
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].style.display = "none";
+                }
+            }
+        }
+
+        
+
+        function goTo(url) {
+            window.location.href = url;
+        }
+    </script>
+
+</body>
+</html>
